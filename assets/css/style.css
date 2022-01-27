@@ -1,0 +1,38 @@
+.hero {
+    padding: 3% 4%;
+    background-image: linear-gradient(rgb(53, 85, 242), rgb(120, 167, 255));
+    color: white;
+    text-align: center;
+  }
+
+  .app-title {
+    font-size: 3rem;
+  }
+
+  .btn {
+    font-size: 1.3rem;
+    text-decoration:none;
+    padding: 6px 5px;
+    width: 100%;
+    display: block;
+    margin: 5px 0;
+    border-radius: .3rem;
+    color: white;
+    border: none;
+    outline: none;
+    background-color: rgb(120, 167, 255);
+    box-shadow: 3px 3px #a3a1a0;
+    transform: translate(-1px, -1px);
+  }
+
+
+
+
+.list-group {
+    padding: 0;
+    list-style: none;
+  }
+  
+ 
+
+  
