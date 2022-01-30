@@ -5,8 +5,8 @@ var citySearchDiv = document.querySelector("#input-group");
 var cityFormEl= document.querySelector("#city-search-form");
 var cityInputEl = document.querySelector("#cityInput");
 var forecastContainerEl = document.querySelector("#forecast-container");
-
-
+var searchHistoryBtn = document.querySelector("#search-history-btn")
+var cities = [];
 
 
 var formSumbitHandler = function(event){
@@ -17,13 +17,20 @@ var formSumbitHandler = function(event){
     if (city){
         getWeather(city);
         fiveDayForecast(city);
+        cities.unshift({city});
         // clear old content
         cityInputEl.value = "";
         // user must enter a city
     } else {
         alert("Please enter a city");
     }
+    saveSearch();
+    searchHistory(city);
 }
+
+var saveSearch = function(){
+    localStorage.setItem("cities", JSON.stringify(cities));
+};
 
 var getWeather = function(city) {
     // personal api key to access OpenWeatherAPI
@@ -172,5 +179,27 @@ var display5DayForecast = function(weatherResults) {
        forecastContainerEl.appendChild(forecastEl);
     }
 }
+
+
+var searchHistory = function(searchHistory) {
+    console.log(searchHistory);
+    var searchHistoryEl = document.createElement('button');
+    searchHistoryEl.textContent = searchHistory;
+    searchHistoryEl.setAttribute("data-city", searchHistory);
+    searchHistoryEl.setAttribute("type", "submit");
+
+    searchHistoryBtn.prepend(searchHistoryEl);
+}
+
+var pastSearchLoad = function(event) {
+    var city = event.target.getAttribute("data-city");
+    if (city) {
+        getWeather(city);
+        fiveDayForecast(city);
+    }
+}
+
+
 // event listener for search form
 cityFormEl.addEventListener("submit", formSumbitHandler);
+searchHistoryBtn.addEventListener("click", pastSearchLoad);
