@@ -4,6 +4,7 @@ var searchBtn = document.querySelector("#searchBtn");
 var citySearchDiv = document.querySelector("#input-group");
 var cityFormEl= document.querySelector("#city-search-form");
 var cityInputEl = document.querySelector("#cityInput");
+var forecastContainerEl = document.querySelector("#forecast-container");
 
 
 
@@ -15,6 +16,7 @@ var formSumbitHandler = function(event){
     var city = cityInputEl.value.trim();
     if (city){
         getWeather(city);
+        fiveDayForecast(city);
         // clear old content
         cityInputEl.value = "";
         // user must enter a city
@@ -39,13 +41,14 @@ var getWeather = function(city) {
 };
 
 var displayWeather = function(weatherResults) {
+    weatherDetailContainer.textContent= "";  
     //display searched city name
     var currentCity = document.createElement('h2');
     currentCity.textContent = weatherResults.name;
     weatherDetailContainer.appendChild(currentCity);
     //display current date
     var currentDate = document.createElement("span")
-    currentDate.textContent = " (" + moment().format("MMM D, YYYY") + ") ";
+    currentDate.textContent = " (" + moment().format("MMM D, YYYY h:mm a") + ") ";
     currentCity.appendChild(currentDate);
 
     //create a span element to hold temperature data
@@ -110,5 +113,64 @@ var displayUvIndex = function(index) {
     weatherDetailContainer.appendChild(uvIndexEl);
 }
 
+var fiveDayForecast = function(city) {
+    forecastContainerEl.textContent = ""
+    var apiKey = "99edf6959fb1a88410ca2862d0a12b92";
+    var apiUrl = `https://api.openweathermap.org/data/2.5/forecast?q=${city}&units=imperial&appid=${apiKey}`
+
+    fetch(apiUrl)
+    .then(response => response.json())
+        .then(data => { 
+            console.log(data)
+            display5DayForecast(data);
+        });
+    };
+
+
+var display5DayForecast = function(weatherResults) {
+    var forecast = weatherResults.list;
+    for(var i = 5; i < forecast.length; i= i + 8){
+    var dailyForecast = forecast[i];
+   
+    var forecastEl = document.createElement("div");
+    forecastEl.classList = "card bg-primary text-light m-2";
+
+    console.log(dailyForecast);
+
+    //display 5day date
+    var forecastDate = document.createElement("h5")
+       forecastDate.textContent= moment.unix(dailyForecast.dt).format("MMM D, YYYY");
+       forecastDate.classList = "card-header text-center"
+       forecastEl.appendChild(forecastDate);
+
+       //display weather icon
+       var forecastImage = document.createElement('img');
+       forecastImage.src = ` http://openweathermap.org/img/wn/${dailyForecast.weather[0].icon}@2x.png`
+       forecastImage.style.width = '30%';
+       forecastEl.appendChild(forecastImage);
+
+        //display temp
+        var forecastTemp = document.createElement('span');
+        forecastTemp.textContent = "Temp: " + dailyForecast.main.temp + " °F";
+        forecastTemp.classList = "card-body";
+        forecastEl.appendChild(forecastTemp);
+
+        //display wind
+        var forecastWind = document.createElement('span');
+        forecastWind.textContent = "Wind: " + dailyForecast.wind.speed + " MPH";
+        forecastWind.classList = "card-body";
+        forecastEl.appendChild(forecastWind);
+
+        //display humidity
+        var forecastHumidity = document.createElement('span');
+        forecastHumidity.textContent = "Humidity: " + dailyForecast.main.humidity + " %";
+        forecastHumidity.classList = "card-body";
+        forecastEl.appendChild(forecastHumidity);
+
+
+       //append to forecast div
+       forecastContainerEl.appendChild(forecastEl);
+    }
+}
 // event listener for search form
 cityFormEl.addEventListener("submit", formSumbitHandler);
